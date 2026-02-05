@@ -3,10 +3,8 @@ import time
 import requests
 import json
 import os
-import subset2evaluate
-import subset2evaluate.utils
 import argparse
-from utils import LANG_TO_NAME, MODEL_VLLM_PARAMS
+from utils import MODEL_VLLM_PARAMS
 import tqdm
 
 args = argparse.ArgumentParser()
@@ -31,7 +29,7 @@ def wait_for_server():
         time.sleep(5)
 
 
-def get_translation(text_src, lang1, lang2):
+def get_translation(prompt):
     try:
         response = requests.post(
             API_URL,
@@ -42,7 +40,7 @@ def get_translation(text_src, lang1, lang2):
                     "messages": [
                         {
                             "role": "user",
-                            "content": f"Translate the text on the next line from {lang1} to {lang2}. Output only the translation in {lang2} and nothing else:\n\n{text_src}\n\n",
+                            "content": prompt,
                         }
                     ],
                 }
@@ -50,9 +48,6 @@ def get_translation(text_src, lang1, lang2):
         )
         response.raise_for_status()
         out = response.json()["choices"][0]["message"]["content"]
-        # Basic parsing based on 01-test.py logic, assuming </think> might be present
-        if "</think>" in out:
-            out = out.split("</think>")[-1].strip()
         return out.strip()
     except Exception as e:
         print(f"Error translating: {e}")
@@ -91,25 +86,18 @@ if __name__ == "__main__":
 
         # Load data
         print("Loading data...")
-        data = subset2evaluate.utils.load_data_wmt_all()
-        data = {k: v for k, v in data.items() if k[0] == "wmt25"}
-        data = [
-            line
-            | {
-                "lang1": LANG_TO_NAME[k[1].split("-")[0]],
-                "lang2": LANG_TO_NAME[k[1].split("-")[1]],
-            }
-            for k, v in data.items()
-            for line in v
-        ]
+
+        with open("data/wmt25_humeval.json", "r") as f:
+            data = json.load(f)
         results = []
 
         print(f"Starting translation of {len(data)} items...")
         for i, item in enumerate(tqdm.tqdm(data)):
             src_text = item["src"]
-            translation = get_translation(src_text, item["lang1"], item["lang2"])
+            translation = get_translation(item["prompt"] + "\n\n" + item["src"])
 
             result_item = {
+                "i": item["i"],
                 "src": src_text,
                 "tgt": translation,
             }
