@@ -4,7 +4,7 @@ import subset2evaluate
 import json
 
 data = [
-    line
+    line | {"dataset": f"{k[0]}/{k[1]}"}
     for k, v in subset2evaluate.utils.load_data_wmt_all().items()
     if k[0] == "wmt25"
     for line in v
@@ -19,7 +19,12 @@ for line in data:
     line["prompt"] = data_prompts[line["doc"]]
     print(line["prompt"])
 
-with open("../data/wmt25_humeval.json", "w") as f:
-    json.dump(data, f, ensure_ascii=False)
+# TODO: rest of WMT25
+# TODO: WMT24++
+# TODO: SwissGov-RSD
+
+with open("../data/all_v0.jsonl", "w") as f:
+    for line in data:
+        f.write(json.dumps(line, ensure_ascii=False) + "\n")
 
 print("Saved", len(data), "lines")
