@@ -24,9 +24,9 @@ scores = model.predict(
     [{"src": src, "mt": tgt} for src, tgt in data_missing_metric],
     batch_size=16,
     gpus=1,
-)
+).scores
 data_missing_metric = {
-    (src, tgt): score for (src, tgt), score in zip(data_missing_metric, scores)
+    (src, tgt): score for (src, tgt), score in zip(data_missing_metric)
 }
 for line in data:
     for model, tgt in line["tgt"].items():
