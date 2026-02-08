@@ -6,7 +6,7 @@ import json
 data = [
     line | {"dataset": f"{k[0]}/{k[1]}"}
     for k, v in subset2evaluate.utils.load_data_wmt_all(
-        require_human=False, name_filter=lambda k: k[0] in {"wmt25", "wmt24pp"}
+        require_human=False, name_filter=lambda k: k[0] in {"wmt25", "wmt24", "wmt24pp"}
     ).items()
     for line in v
 ]
@@ -33,7 +33,7 @@ def get_prompt(src, doc, dataset):
     dataset, langs = dataset.split("/")
     if dataset == "wmt25":
         return data_prompt[doc] + "\n\n" + src
-    elif dataset == "wmt24pp":
+    elif dataset in {"wmt24", "wmt24pp"}:
         lang1, lang2 = langs.split("-")
         lang1_long = langcode_to_long(lang1, script=False)
         lang2_long = langcode_to_long(lang2, script=True)
@@ -53,7 +53,7 @@ data = [
     for line in data
 ]
 
-with open("../data/all_v0.jsonl", "w") as f:
+with open("../data/all_v1.jsonl", "w") as f:
     for line in data:
         f.write(json.dumps(line, ensure_ascii=False) + "\n")
 
@@ -63,8 +63,8 @@ print("Saved", len(data), "lines")
 # %%
 import gzip
 
-with open("../data/all_v0.jsonl", "rb") as f:
-    with gzip.open("../data/all_v0.jsonl.gz", "wb") as g:
+with open("../data/all_v1.jsonl", "rb") as f:
+    with gzip.open("../data/all_v1.jsonl.gz", "wb") as g:
         g.write(f.read())
 
 print("g-zipped")

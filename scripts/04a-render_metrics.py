@@ -4,7 +4,7 @@ import json
 import collections
 import statistics
 
-with open("../data/all_v0_scored.jsonl", "r") as f:
+with open("../data/all_v1_scored.jsonl", "r") as f:
     data = [json.loads(x) for x in f.readlines()]
 
 data_by_dataset = collections.defaultdict(list)
