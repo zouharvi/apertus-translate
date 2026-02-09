@@ -1,9 +1,12 @@
-# %%
-
 import json
+import argparse
 from comet import download_model, load_from_checkpoint
 
-with open("../data/all_v1.jsonl", "r") as f:
+args = argparse.ArgumentParser()
+args.add_argument("file", type=str)
+args = args.parse_args()
+
+with open(args.file, "r") as f:
     data = [json.loads(x) for x in f.readlines()]
 
 METRIC = "COMETKiwi22"
@@ -14,7 +17,7 @@ for line in data:
             data_missing_metric.add((line["src"], tgt))
 
 data_missing_metric = list(data_missing_metric)
-print(len(data_missing_metric))
+print(len(data_missing_metric), "translations missing metric")
 
 model_path = download_model("Unbabel/wmt22-cometkiwi-da")
 model = load_from_checkpoint(model_path)
@@ -30,8 +33,10 @@ data_missing_metric = {
 for line in data:
     for model, tgt in line["tgt"].items():
         if METRIC not in line["scores"].get(model, {}):
+            if model not in line["scores"]:
+                line["scores"][model] = {}
             line["scores"][model][METRIC] = data_missing_metric[(line["src"], tgt)]
 
-with open("../data/all_v1_scored.jsonl", "w") as f:
+with open(args.file, "w") as f:
     for line in data:
         f.write(json.dumps(line) + "\n")

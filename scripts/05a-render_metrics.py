@@ -1,10 +1,8 @@
-# %%
-
 import json
 import collections
 import statistics
 
-with open("../data/all_v1_scored.jsonl", "r") as f:
+with open("data/all_v1.jsonl", "r") as f:
     data = [json.loads(x) for x in f.readlines()]
 
 data_by_dataset = collections.defaultdict(list)
@@ -22,5 +20,5 @@ for dataset, lines in data_by_dataset.items():
     models_scores.sort(key=lambda x: x[1], reverse=True)
     out[dataset] = {m: s for m, s in models_scores}
 
-with open("../outputs/04-metrics.json", "w") as f:
+with open("outputs/05-metrics.json", "w") as f:
     json.dump(out, f, indent=2)

@@ -1,11 +1,24 @@
-// typst compile scripts/04b-render_metrics.typ outputs/04b-render_metrics.pdf --root .
+// typst compile scripts/05b-render_metrics.typ outputs/05b-render_metrics.pdf --root .
 
 #import "@preview/booktabs:0.0.4": *
 #show: booktabs-default-table-style
 #set page(height: auto, width: auto, margin: 2em)
 #set text(font: "TeX Gyre Termes")
 
-#let metrics = json("../outputs/04-metrics.json")
+#let metrics = json("../outputs/05-metrics.json")
+
+#let text_nowrap(x) = {
+  box(
+    width: 3cm,
+    clip: true,
+    outset: (y: 3pt),
+  )[
+    #box(
+      width: 1000pt,
+      x,
+    )
+  ]
+}
 
 #let format_cell(model, x) = {
   let (min, max) = (0.6, 0.7)
@@ -13,13 +26,18 @@
     (green, calc.max((x - min) / (max - min), 0) * 500%),
     (red, calc.max((max - x) / (max - min), 0) * 500%),
   )
+  if model.contains("Apertus") {
+    model = sym.square.filled + " " + model
+  } else if "Unbabel-Tower70B".contains(model) {
+    model = strike(model)
+  }
 
   let s = str(calc.round(x, digits: 3))
   if not s.contains(".") { s += "." }
   let tail = s.split(".").last()
   (
-    table.cell(fill: color, box(width: 3cm, model)),
-    table.cell(fill: color, s + "0" * (3 - tail.len())),
+    table.cell(inset: 3pt, fill: color, text_nowrap(model)),
+    table.cell(inset: 3pt, fill: color, s + "0" * (3 - tail.len())),
   )
 }
 
