@@ -17,6 +17,7 @@ Data versions:
 
 Run the following to render the PDF metrics overview. You'll need Typst amongst the typical software stack:
 ```bash
-python3 scripts/05a-render_metrics.py
+python3 scripts/03a-add_metrics.py data/all_v1.jsonl
+python3 scripts/05a-render_metrics.py data/all_v1.jsonl
 typst compile scripts/05b-render_metrics.typ outputs/05b-render_metrics.pdf --root .
 ```

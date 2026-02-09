@@ -1,8 +1,13 @@
 import json
 import collections
 import statistics
+import argparse
 
-with open("data/all_v1.jsonl", "r") as f:
+args = argparse.ArgumentParser()
+args.add_argument("file", type=str)
+args = args.parse_args()
+
+with open(args.file, "r") as f:
     data = [json.loads(x) for x in f.readlines()]
 
 data_by_dataset = collections.defaultdict(list)

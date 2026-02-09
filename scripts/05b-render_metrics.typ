@@ -49,6 +49,7 @@
     spacing: 2em,
     ..metrics
       .pairs()
+      .filter(((dataset, _)) => not dataset.starts-with("wmt24pp"))
       .map(((dataset, models_scores)) => {
         (
           dataset
