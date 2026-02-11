@@ -60,6 +60,9 @@ with open("../data/all_v1.jsonl", "w") as f:
 print("Saved", len(data), "lines")
 
 
+# TODO: add https://huggingface.co/datasets/ZurichNLP/wmt24pp-rm
+# TODO: add Michelle's en/de/it/fr data
+
 # %%
 import gzip
 
